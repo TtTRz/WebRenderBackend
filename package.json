@@ -1,0 +1,17 @@
+{
+  "name": "canvas-kit-vite-demo",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "devDependencies": {
+    "canvaskit-wasm": "^0.25.0",
+    "stretch-layout": "^0.3.2",
+    "vite": "^2.0.5"
+  },
+  "dependencies": {
+    "@types/canvaskit-wasm": "^0.18.0"
+  }
+}

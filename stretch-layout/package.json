@@ -1,0 +1,15 @@
+{
+  "name": "stretch-layout",
+  "collaborators": [
+    "Visly Inc. <emil@visly.app>"
+  ],
+  "version": "0.3.2",
+  "files": [
+    "stretch_layout_bg.wasm",
+    "stretch_layout.js",
+    "stretch_layout.d.ts"
+  ],
+  "module": "stretch_layout.js",
+  "types": "stretch_layout.d.ts",
+  "sideEffects": false
+}
