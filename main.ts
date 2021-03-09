@@ -1,47 +1,48 @@
 import CanvasKitInit from 'canvaskit-wasm/bin/canvaskit';
-import init, { Allocator, Node, JustifyContent, FlexDirection, AlignItems } from './stretch-layout';
+import { Allocator, Node, JustifyContent, FlexDirection, AlignItems } from './stretch-layout';
+import StretchLayoutInit from './stretch-layout';
+import LayoutRoot, { measureWindowSize } from './layout';
+import { createCanvas } from './dom';
+import LayoutRoot from './layout';
+
+// Window Size
+let WINDOW_SIZE = {
+  offsetHeight: document.body.offsetHeight,
+  offsetWidth: document.body.offsetWidth,
+}
+
 
 enum RENDER_NODE_TYPE {
   NODE,
   TEXT,
 }
+
 const RENDER_QUEUE = [];
 let surface = undefined
 
-const WINDOW_SIZE = {
-  offsetHeight: document.body.offsetHeight,
-  offsetWidth: document.body.offsetWidth,
-}
 
 let layout = undefined;
 let CanvasKit = undefined;
 let body = undefined;
 let fontMgr = undefined;
 
-const createCanvas = (id, height, width) => {
-  let canvasElement = document.querySelector(id);
-  if (!canvasElement) {
-    canvasElement = document.createElement("canvas");
-    canvasElement.id = id
-    canvasElement.height = height
-    canvasElement.width = width
-    document.body.appendChild(canvasElement)
-  }
-  canvasElement.height = height
-  canvasElement.width = width
+// const createCanvas = (id, height, width) => {
+//   let canvasElement = document.querySelector(id);
+//   if (!canvasElement) {
+//     canvasElement = document.createElement("canvas");
+//     canvasElement.id = id
+//     canvasElement.height = height
+//     canvasElement.width = width
+//     document.body.appendChild(canvasElement)
+//   }
+//   canvasElement.height = height
+//   canvasElement.width = width
+// }
 
-}
 
-const measureWindowSize = () => {
-  console.log("mersureWindowSize:")
-  console.log(WINDOW_SIZE)
-  WINDOW_SIZE.offsetHeight = document.body.offsetHeight;
-  WINDOW_SIZE.offsetWidth = document.body.offsetWidth;
-}
-
-const updateCanvasSize = (id) => {
+const updateCanvasSize = (id: string) => {
   console.log("update canvas size")
-  createCanvas(id, WINDOW_SIZE.offsetHeight, WINDOW_SIZE.offsetWidth)
+  createCanvas(id, { height: WINDOW_SIZE.offsetHeight, width: WINDOW_SIZE.offsetWidth })
 }
 
 const update = () => {
@@ -101,7 +102,14 @@ const update = () => {
           y: child_node.y,
           height: child_node.height,
           width: child_node.width
-        }
+        },
+        paint: () => {
+          const paint = new CanvasKit.Paint()
+          paint.setColor(CanvasKit.Color4f(Math.random(), Math.random(), Math.random(), 1.0));
+          // paint.setStyle(CanvasKit.PaintStyle.Stroke);
+          paint.setAntiAlias(true);
+          return paint
+        },
       }
       RENDER_QUEUE.push(text_draw_task)
     }
@@ -109,6 +117,7 @@ const update = () => {
 
   surface.drawOnce(draw);
 }
+
 
 const draw = (canvas) => {
   console.log("draw")
@@ -129,31 +138,48 @@ const draw = (canvas) => {
           },
           textAlign: CanvasKit.TextAlign.Center,
         });
-        const text = 'Render with CanvasKit!';
+
+        const text = 'Render with CanvasKit!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!';
         const builder = CanvasKit.ParagraphBuilder.Make(paraStyle, fontMgr);
         builder.addText(text);
         const paragraph = builder.build();
         paragraph.layout(draw_task.position.width);
         canvas.drawParagraph(paragraph, draw_task.position.x, draw_task.position.y);
         surface.flush();
+
+        // canvas.drawText(text, draw_task.position.x, draw_task.position.y, draw_task.paint(), new CanvasKit.Font(null, 36))
         break;
       }
     }
   })
 }
 
-const run = async () => {
-  await init();
-  const response = await fetch('https://storage.googleapis.com/skia-cdn/misc/Roboto-Regular.ttf')
-  const robotoData = await response.arrayBuffer();
-  createCanvas("canvas", WINDOW_SIZE.offsetHeight, WINDOW_SIZE.offsetWidth)
+const init = async () => {
+  // init stretch-layout
+  await StretchLayoutInit();
+
+  // init Canvas Element
+  createCanvas("canvas", { width: WINDOW_SIZE.offsetWidth, height: WINDOW_SIZE.offsetHeight })
+
+  // init CvanvasKit
   CanvasKit = await CanvasKitInit({
     locateFile: (file) => 'node_modules/canvaskit-wasm/bin/' + file
   });
 
+  // init CanvasKit Font
+  const response = await fetch('https://storage.googleapis.com/skia-cdn/misc/Roboto-Regular.ttf')
+  const robotoData = await response.arrayBuffer();
   fontMgr = CanvasKit.FontMgr.FromData([robotoData]);
+}
+
+
+
+const run = async () => {
+  await init();
+  // const layoutRoot = new LayoutRoot()
 
   const allocator = new Allocator();
+
   body = new Node(allocator, {
     justifyContent: JustifyContent.Center,
     flexDirection: FlexDirection.Column,
@@ -169,7 +195,7 @@ const run = async () => {
   update()
 
   window.addEventListener("resize", () => {
-    measureWindowSize()
+    WINDOW_SIZE = measureWindowSize()
     updateCanvasSize("canvas")
     update()
   })
@@ -177,6 +203,6 @@ const run = async () => {
 }
 
 
-measureWindowSize()
+WINDOW_SIZE = measureWindowSize()
 run()
 
