@@ -3,7 +3,6 @@ import { Allocator, Node, JustifyContent, FlexDirection, AlignItems } from './st
 import StretchLayoutInit from './stretch-layout';
 import LayoutRoot, { measureWindowSize } from './layout';
 import { createCanvas } from './dom';
-import LayoutRoot from './layout';
 
 // Window Size
 let WINDOW_SIZE = {
@@ -171,7 +170,6 @@ const init = async () => {
   const robotoData = await response.arrayBuffer();
   fontMgr = CanvasKit.FontMgr.FromData([robotoData]);
 }
-
 
 
 const run = async () => {
