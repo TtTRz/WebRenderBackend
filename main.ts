@@ -1,9 +1,8 @@
 import CanvasKitInit from 'canvaskit-wasm/bin/canvaskit';
-import { Allocator, Node, JustifyContent, FlexDirection, AlignItems } from './stretch-layout';
 import StretchLayoutInit from './stretch-layout';
 import LayoutCtx, { measureWindowSize } from './layout';
 import { createCanvas } from './dom';
-import BaseNode from './layout/models/base_node';
+import ElementNode from './layout/models/element_node';
 
 // Window Size
 let WINDOW_SIZE = {
@@ -23,7 +22,7 @@ let surface = undefined
 
 let layout = undefined;
 let CanvasKit = undefined;
-let body = undefined;
+let RootNode = undefined;
 let fontMgr = undefined;
 
 // const createCanvas = (id, height, width) => {
@@ -50,14 +49,14 @@ const update = () => {
 
   RENDER_QUEUE.length = 0
 
-  body.setStyle({
-    ...body.getStyle(),
+  RootNode.addStyle({
     height: WINDOW_SIZE.offsetHeight,
     width: WINDOW_SIZE.offsetWidth
   })
 
-  layout = body.computeLayout({ height: WINDOW_SIZE.offsetHeight, width: WINDOW_SIZE.offsetWidth });
+  layout = RootNode.stretchNode.computeLayout({ height: WINDOW_SIZE.offsetHeight, width: WINDOW_SIZE.offsetWidth });
 
+  console.log(layout)
   console.log("layout:")
   console.log(layout)
   const layout_draw_task = {
@@ -71,6 +70,7 @@ const update = () => {
       return paint
     },
   }
+
   RENDER_QUEUE.push(layout_draw_task)
 
   for (let i = 0; i < layout.childCount; i++) {
@@ -175,18 +175,29 @@ const init = async () => {
 
 const run = async () => {
   await init();
-  // const layoutRoot = new LayoutRoot()
-  const allocator = new Allocator();
+  const layoutCtx = new LayoutCtx();
+  await layoutCtx.init();
   test()
-  body = new Node(allocator, {
-    justifyContent: JustifyContent.Center,
-    flexDirection: FlexDirection.Column,
-    alignItems: AlignItems.Center
-  });
 
-  body.addChild(new Node(allocator, { width: 500, height: 64, marginBottom: 20, }));
-  body.addChild(new Node(allocator, { width: 300, height: 300, marginBottom: 16 }));
-  body.addChild(new Node(allocator, { width: 300, height: 100 }));
+  RootNode = new ElementNode();
+  RootNode.setStyle({
+    justifyContent: "center",
+    flexDirection: "column",
+    alignItems: "center",
+  })
+
+  let child_node_1 = new ElementNode();
+  child_node_1.setStyle({ width: 500, height: 64, marginBottom: 20 })
+
+  let child_node_2 = new ElementNode();
+  child_node_2.setStyle({ width: 300, height: 300, marginBottom: 16 })
+
+  let child_node_3 = new ElementNode();
+  child_node_3.setStyle({ width: 300, height: 100 })
+  
+  RootNode.appendChild(child_node_1)
+  RootNode.appendChild(child_node_2)
+  RootNode.appendChild(child_node_3)
 
   surface = CanvasKit.MakeCanvasSurface('canvas');
 
@@ -208,11 +219,13 @@ run()
 const test = async () => {
   const layoutCtx = new LayoutCtx();
   await layoutCtx.init()
-  const node = new BaseNode();
-  node.setStyle({
+  const root = new ElementNode();
+  root.setStyle({
     display: "flex",
     flexDirection: "row-reverse",
   })
-  console.log(node)
-  console.log(node.stretchNode.getStyle())
+  console.log(root)
+  const child = new ElementNode();
+  root.appendChild(child)
+  console.log(root)
 }

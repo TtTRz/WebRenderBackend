@@ -1,4 +1,4 @@
-import { Layout, Node } from '../stretch-layout/stretch_layout';
+import { Node } from '../stretch-layout/stretch_layout';
 import LayoutCtx from '../index';
 import { Style, style2StretchStyle } from '../style';
 
@@ -6,7 +6,6 @@ import { Style, style2StretchStyle } from '../style';
 class BaseNode {
   stretchNode: Node;
   style: Style;
-  children: Array<BaseNode>
   constructor() {
     if (!LayoutCtx.CTX) {
       console.error("LayoutCtx need initialize")
@@ -33,7 +32,6 @@ class BaseNode {
       delete this.style[key];
     })
     this.stretchNode.setStyle(style2StretchStyle(this.style))
-
   }
 }
 
