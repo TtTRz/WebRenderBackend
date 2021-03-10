@@ -1,27 +1,21 @@
 import * as Utils from './utils'
-import { Allocator, Node, JustifyContent, FlexDirection, AlignItems } from './stretch-layout';
+import Init, { Allocator } from './stretch-layout';
 
 
-class LayoutRoot {
+class LayoutCtx {
   // static
-  static INSTANCE: LayoutRoot;
-  static ALLOCATOR: Allocator;
-
-  // private
-  private allocator: Allocator;
-
+  static CTX: LayoutCtx;
+  public allocator: Allocator;
   constructor() {
-    if (LayoutRoot.INSTANCE) {
+    if (LayoutCtx.CTX) {
       console.warn("LayoutRoot has already been initialized")
-      return LayoutRoot.INSTANCE;
+      return LayoutCtx.CTX;
     }
-    this.allocator = new Allocator();
-    LayoutRoot.ALLOCATOR = this.allocator;
-    LayoutRoot.INSTANCE = this;
+    LayoutCtx.CTX = this;
   }
-
-  static getInstance() {
-    return LayoutRoot.INSTANCE
+  async init() {
+    await Init();
+    this.allocator = new Allocator();
   }
 }
 
@@ -32,4 +26,4 @@ class LayoutRoot {
 // Utils
 export const measureWindowSize = Utils.measureWindowSize;
 
-export default LayoutRoot;
+export default LayoutCtx;

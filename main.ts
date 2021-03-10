@@ -1,8 +1,9 @@
 import CanvasKitInit from 'canvaskit-wasm/bin/canvaskit';
 import { Allocator, Node, JustifyContent, FlexDirection, AlignItems } from './stretch-layout';
 import StretchLayoutInit from './stretch-layout';
-import LayoutRoot, { measureWindowSize } from './layout';
+import LayoutCtx, { measureWindowSize } from './layout';
 import { createCanvas } from './dom';
+import BaseNode from './layout/models/base_node';
 
 // Window Size
 let WINDOW_SIZE = {
@@ -175,9 +176,8 @@ const init = async () => {
 const run = async () => {
   await init();
   // const layoutRoot = new LayoutRoot()
-
   const allocator = new Allocator();
-
+  test()
   body = new Node(allocator, {
     justifyContent: JustifyContent.Center,
     flexDirection: FlexDirection.Column,
@@ -204,3 +204,15 @@ const run = async () => {
 WINDOW_SIZE = measureWindowSize()
 run()
 
+
+const test = async () => {
+  const layoutCtx = new LayoutCtx();
+  await layoutCtx.init()
+  const node = new BaseNode();
+  node.setStyle({
+    display: "flex",
+    flexDirection: "row-reverse",
+  })
+  console.log(node)
+  console.log(node.stretchNode.getStyle())
+}

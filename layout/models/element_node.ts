@@ -1,8 +1,10 @@
-import BaseNode from './baseNode'
+import BaseNode from './base_node'
 
 
 class ElementNode extends BaseNode {
-
+  constructor() {
+    super()
+  }
 }
 
 
