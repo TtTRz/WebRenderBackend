@@ -25,18 +25,6 @@ let CanvasKit = undefined;
 let RootNode = undefined;
 let fontMgr = undefined;
 
-// const createCanvas = (id, height, width) => {
-//   let canvasElement = document.querySelector(id);
-//   if (!canvasElement) {
-//     canvasElement = document.createElement("canvas");
-//     canvasElement.id = id
-//     canvasElement.height = height
-//     canvasElement.width = width
-//     document.body.appendChild(canvasElement)
-//   }
-//   canvasElement.height = height
-//   canvasElement.width = width
-// }
 
 
 const updateCanvasSize = (id: string) => {
@@ -194,7 +182,7 @@ const run = async () => {
 
   let child_node_3 = new ElementNode();
   child_node_3.setStyle({ width: 300, height: 100 })
-  
+
   RootNode.appendChild(child_node_1)
   RootNode.appendChild(child_node_2)
   RootNode.appendChild(child_node_3)
