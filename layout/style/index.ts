@@ -1,4 +1,4 @@
-import { AlignItems, AlignSelf, AlignContent, Direction, Display, FlexDirection, JustifyContent, Overflow, PositionType, FlexWrap } from '../stretch-layout';
+import { AlignItems, AlignSelf, AlignContent, Direction, Display, FlexDirection, JustifyContent, Overflow, PositionType, FlexWrap } from '../../stretch-layout';
 import { StretchStyleMap } from './style_mapping'
 
 export interface Style {

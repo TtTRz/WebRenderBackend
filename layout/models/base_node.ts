@@ -1,4 +1,4 @@
-import { Node } from '../stretch-layout/stretch_layout';
+import { Node } from '../../stretch-layout/stretch_layout';
 import LayoutCtx from '../index';
 import { Style, style2StretchStyle } from '../style';
 

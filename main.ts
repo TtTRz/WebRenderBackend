@@ -19,10 +19,8 @@ enum RENDER_NODE_TYPE {
 const RENDER_QUEUE = [];
 let surface = undefined
 
-
 let layout = undefined;
 let CanvasKit = undefined;
-let RootNode = undefined;
 let fontMgr = undefined;
 
 
@@ -33,20 +31,23 @@ const updateCanvasSize = (id: string) => {
 }
 
 const update = () => {
+  if (!LayoutCtx.CTX) return false;
+
   surface = CanvasKit.MakeCanvasSurface('canvas');
+
+  const layoutCtx = LayoutCtx.CTX;
+  const root_node = layoutCtx.getRootNode()
 
   RENDER_QUEUE.length = 0
 
-  RootNode.addStyle({
+  root_node.addStyle({
     height: WINDOW_SIZE.offsetHeight,
     width: WINDOW_SIZE.offsetWidth
   })
 
-  layout = RootNode.stretchNode.computeLayout({ height: WINDOW_SIZE.offsetHeight, width: WINDOW_SIZE.offsetWidth });
+  layoutCtx.computeLayout({ height: WINDOW_SIZE.offsetHeight, width: WINDOW_SIZE.offsetWidth })
 
-  console.log(layout)
-  console.log("layout:")
-  console.log(layout)
+
   const layout_draw_task = {
     type: RENDER_NODE_TYPE.NODE,
     rect: CanvasKit.XYWHRect(layout.x, layout.y, layout.width, layout.height),
@@ -65,7 +66,6 @@ const update = () => {
     let child_node = layout.child(i);
     console.log(`child_node: ${i}`)
     console.log(child_node)
-
     const node_draw_task = {
       type: RENDER_NODE_TYPE.NODE,
       rect: CanvasKit.XYWHRect(child_node.x, child_node.y, child_node.width, child_node.height),
@@ -163,12 +163,14 @@ const init = async () => {
 
 const run = async () => {
   await init();
+
   const layoutCtx = new LayoutCtx();
   await layoutCtx.init();
+  
   test()
 
-  RootNode = new ElementNode();
-  RootNode.setStyle({
+  let root_node = new ElementNode();
+  root_node.setStyle({
     justifyContent: "center",
     flexDirection: "column",
     alignItems: "center",
@@ -183,9 +185,11 @@ const run = async () => {
   let child_node_3 = new ElementNode();
   child_node_3.setStyle({ width: 300, height: 100 })
 
-  RootNode.appendChild(child_node_1)
-  RootNode.appendChild(child_node_2)
-  RootNode.appendChild(child_node_3)
+  root_node.appendChild(child_node_1)
+  root_node.appendChild(child_node_2)
+  root_node.appendChild(child_node_3)
+
+  layoutCtx.setRootNode(root_node)
 
   surface = CanvasKit.MakeCanvasSurface('canvas');
 
@@ -201,6 +205,7 @@ const run = async () => {
 
 
 WINDOW_SIZE = measureWindowSize()
+
 run()
 
 
